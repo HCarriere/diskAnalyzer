@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<meta http-equiv="Content-Language" content="fr">
+		
+		<link rel="shortcut icon" href="/assets/images/favicon.png" type="image/x-icon">
+		<link rel="icon" href="/assets/images/favicon.png" type="image/x-icon">
+		
+        <link rel="stylesheet" href="/css/style.css">
+		{{#each otherCSS}}
+		<link rel="stylesheet" href="{{css}}">
+		{{/each}}
+		
+        <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="/js/superVisionClient.js"></script>
+        <script type="text/javascript" src="/js/analyzerClient.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		{{#each otherScripts}}
+		<script type="text/javascript" src="{{script}}"></script>
+		{{/each}}
+	</head>
+	
+	<body>
+		{{{body}}}
+	</body>
+</html>

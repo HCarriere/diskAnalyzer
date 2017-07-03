@@ -1,0 +1,16 @@
+{
+  "name": "diskanalyzer",
+  "version": "1.0.0",
+  "description": "Construct node view of disk space",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "HCarriere",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "express-handlebars": "^3.0.0",
+    "socket.io": "^2.0.3"
+  }
+}
