@@ -1,6 +1,9 @@
 # diskAnalyzer
 Funky disk analyzer. Will analyze yor disk space and give beautifuls graphs to visualize it.
 
+## Prerequisites
+- Node.js 6.9.4 or later
+
 ## Install
 - Download the project / fork it
 - Unzip it on a new folder
