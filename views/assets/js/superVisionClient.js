@@ -11,7 +11,6 @@ let lastFpp;
 let particles = [];
 let particlesQueue = [];
 let obsoleteParticles = [];
-let mainParticle;
 let stats = {
     frequency: 0,
     received: -1,
@@ -30,6 +29,7 @@ let offset = {
 	xstart: 0,
 	ystart: 0,
 };
+let particlesShowed;
 
 let maxParticlesOnScreen = 2000;
 let attraction = 0.2;
@@ -56,7 +56,7 @@ $(document).ready(function() {
                 size: Math.random()*200000,});
         }
         receiveEvent(array);
-    }, 1000); */
+    }, 1000);  */
 });
 
 /**
@@ -84,16 +84,6 @@ function initCanvas() {
 	height = canvas.height = (window.innerHeight) - 100;
     resizeCanvas();
 
-    mainParticle = {
-        x: width/2,
-        y: height/2,
-        dirx: 0,
-        diry: 0,
-        color: '#126544',
-        size: 10,
-    };
-    addParticle(mainParticle);
-
 	initAnalyzer();
     draw();
 }
@@ -108,9 +98,9 @@ function draw() {
         width+':'+height+', '+
         particlesQueue.length+', '+
         particles.length+', '+
+        particlesShowed+', '+
         JSON.stringify(stats)+', '+
         currentFrame, 50, 50);
-
 
 	if(particlesQueue.length > 0) {
 		for(let i=0; i<min(stats.frequency/stats.fpp,particlesQueue.length-1); i++) {
@@ -137,7 +127,8 @@ function draw() {
 		offset.xstart = 0;
 		offset.ystart = 0;
 	}
-	
+	particlesShowed = 0;
+    
 	drawTree(); // from analyzerClient.js
 	
     updateParticles();
@@ -156,8 +147,8 @@ function updateParticles() {
         let d = 1;
         // update
 		let destination = {
-			x: mouse.x,
-			y: mouse.y,
+			x: mouse.x/offset.z-offset.x,
+			y: mouse.y/offset.z-offset.y,
 		};
        /* if(particles[i].destination) {
 			destination = particles[i].destination;
@@ -212,13 +203,15 @@ function updateParticles() {
             0, 2 * Math.PI);
         ctx.fillStyle = particles[i].color;
         ctx.fill(); */
-		ctx.beginPath();
-		ctx.fillStyle = particles[i].color;
-		ctx.fillRect((particles[i].x+offset.x)*offset.z, 
-					 (particles[i].y+offset.y)*offset.z, 
-					 particles[i].size*offset.z,particles[i].size*offset.z);
-		ctx.fill();
-		
+        if(!isOutbound(particles[i].x, particles[i].y)) {
+            particlesShowed ++;
+            ctx.beginPath();
+            ctx.fillStyle = particles[i].color;
+            ctx.fillRect((particles[i].x+offset.x)*offset.z, 
+                 (particles[i].y+offset.y)*offset.z, 
+                 particles[i].size*offset.z,particles[i].size*offset.z);
+            ctx.fill();
+        }
     }
     // delete obsolete particles
     for(let i of obsoleteParticles) {
@@ -244,7 +237,7 @@ function drawFrame() {
  */
 function absorbEvent(i) {
     obsoleteParticles.push(i);
-    mainParticle.size += map(particles[i].size, 0, 524288000, 0, 1);
+    // mainParticle.size += map(particles[i].size, 0, 524288000, 0, 1);
     stats.absorbed++;
 }
 
@@ -263,6 +256,7 @@ function addParticle(particle) {
  * @param  {Array} events
  */
 function receiveEvent(events) {
+    
 	if(!lastFpp) {
 		lastFpp = currentFrame;
 	} else {
@@ -299,10 +293,20 @@ function receiveEvent(events) {
             diry: rand(-8, 8),
             color: color,
             name: object.name,
-            destination: mainParticle,
+            // destination: mainParticle,
             size: size,
         });
     }
+}
+
+function isOutbound(x, y) {
+    if(x < -offset.x - 50 || 
+       x > width/offset.z-offset.x + 50 || 
+       y < -offset.y - 50 || 
+       y > height/offset.z-offset.y + 50) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -406,7 +410,7 @@ function mouseWheel(e) {
 	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 	if(delta < 0) {
 		// dezoom
-		offset.z = Math.max(0, offset.z-0.1);
+		offset.z = Math.max(0.1, offset.z-0.1);
 	} else if(delta > 0){
 		// zoom
 		offset.z += 0.1;

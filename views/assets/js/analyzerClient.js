@@ -8,7 +8,7 @@ let secondMaxSize = 0;
 
 let desceleration = 0.25;
 let acceleration = 0.5;
-let baseDist = 120;
+let baseDist = 50;
 let maxNodeSize = 40;
 
 // TESTS
@@ -106,29 +106,32 @@ function drawNode(node) {
 	// move node
 	node.x+=node.dirx;
 	node.y+=node.diry;
-	
+    
 	// draw line with parent
 	if(node.parent >= 0) {
 		let parent = datas[node.parent];
-		// line to parent
-		ctx.beginPath();
-		ctx.strokeStyle = parent.color;
-		ctx.moveTo((node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z);
-		ctx.lineTo((parent.x+offset.x)*offset.z, (parent.y+offset.y)*offset.z);
-		ctx.stroke();
+        // line to parent
+        ctx.beginPath();
+        ctx.strokeStyle = parent.color;
+        ctx.moveTo((node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z);
+        ctx.lineTo((parent.x+offset.x)*offset.z, (parent.y+offset.y)*offset.z);
+        ctx.stroke();
 	}
-	
-	// draw node
-	ctx.beginPath();
-	ctx.fillStyle=node.color;
-	ctx.arc((node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z, (node.fsize/2)*offset.z, 0, 2*Math.PI);
-	ctx.fill();
-	// if > max representation size : show size
-	if(node.fsize >= maxNodeSize) {
-		ctx.fillStyle = 'white';
-		ctx.fillText(node.ssize, (node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z);
-	}
-	
+    
+    // draw node
+    if(!isOutbound(node.x, node.y)) {
+        particlesShowed++;
+        ctx.beginPath();
+        ctx.fillStyle=node.color;
+        ctx.arc((node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z, (node.fsize/2)*offset.z, 0, 2*Math.PI);
+        ctx.fill();
+        // if > max representation size : show size
+        if(node.fsize >= maxNodeSize) {
+            ctx.fillStyle = 'white';
+            ctx.fillText(node.ssize, (node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z);
+        }
+    }
+    
 }
 
 function explodeNode(node) {
@@ -176,7 +179,6 @@ function descelerate(node) {
 }
 
 function receiveFinishData(data) {
-	particles.splice(0, 1);
 	datas = data;
 	console.log('final datas received: '+datas.length+' nodes.');
 	// transforming data
@@ -223,4 +225,8 @@ function humanFileSize(bytes, si) {
     return bytes.toFixed(1)+' '+units[u];
 }
 
+
+function resetAnalyzerGraph() {
+    datas = [];
+}
 
