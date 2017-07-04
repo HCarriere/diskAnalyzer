@@ -145,9 +145,11 @@ function explodeNode(node) {
 		child.ssize = humanFileSize(child.size, false);
 		if(child.children.length == 0) {
 			child.color = 'rgb(185, 47, 47)';
-		} else {
+		} else if(child.children.length < 100) {
 			child.color = 'rgb(21, 124, 21)';
-		}
+		} else {
+            child.color = 'rgb(255, 165, 21)';
+        }
 		
 		drawnNodes.push(i);
 	}

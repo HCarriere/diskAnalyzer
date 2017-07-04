@@ -6,11 +6,20 @@ const superVision = require('./supervision');
 let folderQueue;
 let folderInfos;
 
+let lock;
+
 function start(req, callback) {
+    if(lock) {
+        console.log('Analyse en cours. Impossible de relancer une analyse !');
+        callback({
+            message: 'Analyse en cours. Impossible de relancer une analyse !',
+        });
+        return;
+    }
 	let params = {
 		folder: 'C:/dev/tools/diskanalyzer/diskanalyzer',
 	};
-	
+	lock = true;
 	getParamsFromRequest(req, params);
 	
 	folderQueue = [{
@@ -33,6 +42,7 @@ function start(req, callback) {
 		console.log('root size : '+folderInfos[0].size);
 		console.log('Operation finished.');
 		superVision.cleanEvents(folderInfos);
+        lock = false;
 	});
 }
 
@@ -56,9 +66,11 @@ function recursiveBrowse(callback) {
 			level: 1,
 		}
 		
-		for(let file of files) {
-			analyseFile(currentFolder.folder+'/'+file, folderInfo, folderInfo.id);
-		}
+        if(files && files.length > 0) {
+            for(let file of files) {
+                analyseFile(currentFolder.folder+'/'+file, folderInfo, folderInfo.id);
+            }
+        }
 		if(currentFolder.parent>0) {
 			folderInfo.level = folderInfos[currentFolder.parent].level+1;
 		}
@@ -83,20 +95,29 @@ function recursiveBrowse(callback) {
 
 
 function analyseFile(file, folderInfo, parentId) {
-	let stats = fs.statSync(file);
-	
-	if(stats.isDirectory()) {
-		// directory
-		// add directory to queue
-		folderQueue.push({
-			folder: file,
-			parent: parentId,
-		});
-		
-	} else {
-		// file
-		folderInfo.size += stats.size;
-	}
+    try{
+        let stats = fs.statSync(file);
+
+        if(stats.isDirectory()) {
+            // directory
+            // add directory to queue
+            folderQueue.push({
+                folder: file,
+                parent: parentId,
+            });
+
+        } else {
+            // file
+            folderInfo.size += stats.size;
+        }
+    }catch(e) {
+        console.log(e);
+        superVision.addEvent({
+            name: file,
+            size: 0,
+            success: false,
+        });
+    }
 	
 }
 

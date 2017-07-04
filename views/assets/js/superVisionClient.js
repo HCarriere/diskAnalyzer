@@ -281,6 +281,15 @@ function receiveEvent(events) {
     // particlesQueue = [];
     // get new events to queue
     for(let object of events) {
+        let color;
+        let size;
+        if(object.success) {
+            color='white';
+            size=constrain(map(object.size, 0, 1000000, 1, 2),1,2);
+        } else {
+            color='red';
+            size=3;
+        }
         addParticle({
             /*x: rand(width+10, width+100),
             y: rand(height/2-100, height/2+100),*/
@@ -288,10 +297,10 @@ function receiveEvent(events) {
 			y: height/2,
             dirx: rand(-8, 0),
             diry: rand(-8, 8),
-            color: 'white',
+            color: color,
             name: object.name,
             destination: mainParticle,
-            size: constrain(map(object.size, 0, 1000000, 1, 2),1,2),
+            size: size,
         });
     }
 }

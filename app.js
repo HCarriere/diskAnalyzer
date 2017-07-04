@@ -43,7 +43,7 @@ app
 folder: 'C:/dev/tools/diskanalyzer/diskanalyzer',
 recursive: true,
 */
-app.post('/startAnalysis', (req, res) => {
+app.get('/startAnalysis', (req, res) => {
 	analysis.start(req, (message) => {
 		sendJSON(res, message);
 	});
