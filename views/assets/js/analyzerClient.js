@@ -113,6 +113,7 @@ function drawNode(node) {
         // line to parent
         ctx.beginPath();
         ctx.strokeStyle = parent.color;
+        ctx.lineWidth = Math.max(1, parent.fsize/20);
         ctx.moveTo((node.x+offset.x)*offset.z, (node.y+offset.y)*offset.z);
         ctx.lineTo((parent.x+offset.x)*offset.z, (parent.y+offset.y)*offset.z);
         ctx.stroke();
