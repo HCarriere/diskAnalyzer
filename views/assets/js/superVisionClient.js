@@ -103,7 +103,7 @@ function draw() {
         currentFrame, 50, 50);
 
 	if(particlesQueue.length > 0) {
-		for(let i=0; i<min(stats.frequency/stats.fpp,particlesQueue.length-1); i++) {
+		for(let i=0; i<min( (stats.frequency/stats.fpp)*map(particlesQueue.length, 0,5000,1,10) ,particlesQueue.length-1); i++) {
 			if(particles.length < maxParticlesOnScreen) {
 				particles.push(particlesQueue.shift());
 			}
